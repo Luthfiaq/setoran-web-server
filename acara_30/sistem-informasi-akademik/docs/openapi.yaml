@@ -1,0 +1,141 @@
+openapi: 3.0.0
+info:
+  title: API Sistem Informasi Akademik (MVC)
+  description: RESTful API PHP Native (Router -> Controller -> Model) untuk praktikum BKPM Workshop SI Web Server.
+  version: 1.0.0
+servers:
+  - url: https://sia.namadomain.com
+    description: Produksi (HTTPS)
+  - url: http://localhost/setoran-web/acara_30/sistem-informasi-akademik/public
+    description: Lokal (Laragon)
+paths:
+  /login:
+    post:
+      summary: Autentikasi pengguna (AuthController::login)
+      tags: [Autentikasi]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username: { type: string, example: admin }
+                password: { type: string, example: rahasia123 }
+      responses:
+        '200': { description: Login berhasil, mengembalikan token }
+        '401': { description: Kredensial tidak valid }
+  /register:
+    post:
+      summary: Pendaftaran pengguna baru (AuthController::register)
+      tags: [Autentikasi]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, email, password]
+              properties:
+                username: { type: string, example: dewi }
+                email: { type: string, format: email, example: dewi@kampus.ac.id }
+                password: { type: string, minLength: 6, example: rahasia123 }
+      responses:
+        '201': { description: Registrasi berhasil }
+        '400': { description: Field wajib kosong }
+        '409': { description: Username atau email sudah dipakai }
+        '422': { description: Email tidak valid / password terlalu pendek }
+  /mahasiswa:
+    get:
+      summary: Mengambil data mahasiswa (MahasiswaController::index)
+      tags: [Mahasiswa]
+      parameters:
+        - name: id
+          in: query
+          required: false
+          description: Jika diisi, hanya mengembalikan satu mahasiswa
+          schema: { type: integer }
+      responses:
+        '200': { description: Data berhasil diambil }
+        '404': { description: Data tidak ditemukan }
+    post:
+      summary: Menambahkan data mahasiswa, foto opsional (MahasiswaController::store)
+      tags: [Mahasiswa]
+      security: [ { bearerAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MahasiswaInput' }
+          multipart/form-data:
+            schema:
+              allOf:
+                - { $ref: '#/components/schemas/MahasiswaInput' }
+                - type: object
+                  properties:
+                    foto: { type: string, format: binary, description: JPG/PNG maksimal 2MB }
+      responses:
+        '201': { description: Data berhasil ditambahkan }
+        '400': { description: Field wajib kosong }
+        '401': { description: Token tidak ada / tidak valid }
+        '422': { description: NIM bukan 9 karakter / sudah terdaftar / foto tidak valid }
+    put:
+      summary: Mengubah data mahasiswa (MahasiswaController::update)
+      tags: [Mahasiswa]
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MahasiswaInput' }
+      responses:
+        '200': { description: Data berhasil diperbarui }
+        '401': { description: Token tidak ada / tidak valid }
+    delete:
+      summary: Menghapus data mahasiswa - hanya admin (MahasiswaController::destroy)
+      tags: [Mahasiswa]
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Data berhasil dihapus }
+        '401': { description: Token tidak ada / tidak valid }
+        '403': { description: Role bukan admin }
+        '404': { description: Data tidak ditemukan }
+  /mahasiswa/summary:
+    get:
+      summary: Ringkasan jumlah mahasiswa per prodi (MahasiswaController::summary)
+      tags: [Mahasiswa]
+      security: [ { bearerAuth: [] } ]
+      responses:
+        '200': { description: Ringkasan berhasil diambil }
+        '401': { description: Token tidak ada / tidak valid }
+  /buku:
+    get:
+      summary: Mengambil data buku (BukuController::index)
+      tags: [Buku]
+      responses:
+        '200': { description: Data berhasil diambil }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    MahasiswaInput:
+      type: object
+      required: [nim, nama, prodi]
+      properties:
+        nim: { type: string, minLength: 9, maxLength: 9, example: '220100123' }
+        nama: { type: string, example: Andi Saputra }
+        prodi: { type: string, example: Teknik Informatika }

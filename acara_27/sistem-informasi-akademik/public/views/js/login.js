@@ -1,0 +1,37 @@
+// Halaman login: kirim username + password ke POST /login, simpan token, pindah ke dashboard
+
+// Jika sudah login, langsung ke dashboard
+if (getToken()) {
+    window.location.href = 'dashboard.html';
+}
+
+const pesan = document.getElementById('pesan');
+
+// Dialihkan ke sini karena token kedaluwarsa
+if (new URLSearchParams(window.location.search).get('expired')) {
+    pesan.innerHTML = '<div class="alert alert-warning">Sesi berakhir, silakan login kembali.</div>';
+}
+
+document.getElementById('form-login').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const tombol = document.getElementById('tombol');
+    tombol.disabled = true;
+    tombol.textContent = 'Memproses...';
+
+    const username = document.getElementById('username').value.trim();
+    const hasil = await apiRequest('POST', '/login', {
+        username: username,
+        password: document.getElementById('password').value
+    });
+
+    if (hasil.ok && hasil.json.success) {
+        simpanSesi(hasil.json.data.token, hasil.json.data.role, username);
+        window.location.href = 'dashboard.html';
+        return;
+    }
+
+    pesan.innerHTML = '<div class="alert alert-danger">' + escapeHtml(hasil.json.message) + '</div>';
+    tombol.disabled = false;
+    tombol.textContent = 'Masuk';
+});

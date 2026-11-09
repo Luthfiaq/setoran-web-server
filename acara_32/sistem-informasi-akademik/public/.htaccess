@@ -1,0 +1,16 @@
+RewriteEngine On
+
+# Meneruskan header Authorization ke PHP (beberapa konfigurasi Apache membuangnya)
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+# ---- Acara 30: paksa HTTPS (tidak berlaku di localhost / *.test agar Laragon tetap jalan) ----
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:[0-9]+)?$ [NC]
+RewriteCond %{HTTP_HOST} !\.(test|local)(:[0-9]+)?$ [NC]
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Rewrite ke Front Controller (sejak acara 17)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

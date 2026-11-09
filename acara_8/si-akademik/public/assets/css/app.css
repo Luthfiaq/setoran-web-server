@@ -1,0 +1,3 @@
+/* Gaya tambahan aplikasi */
+body { min-height: 100vh; }
+.table th { white-space: nowrap; }

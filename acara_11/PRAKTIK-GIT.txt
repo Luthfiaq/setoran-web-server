@@ -1,0 +1,56 @@
+ACARA 11 - GIT DASAR: REPOSITORY, COMMIT, PUSH, PULL, CLONE
+============================================================
+Folder project: acara_11\si-akademik (isinya sama dengan project acara 10).
+Semua perintah dijalankan di terminal (Git Bash / terminal VS Code) DI DALAM folder si-akademik.
+
+PERSIAPAN (sekali saja)
+  git --version                                   (pastikan Git sudah terpasang)
+  git config --global user.name  "Muhammad Luthfi Aqrobahu"
+  git config --global user.email "emailgithub@kamu.com"
+
+1. Buka github.com -> New repository -> nama: si-akademik -> JANGAN centang README/.gitignore -> Create.
+   Salin URL repo, contoh: https://github.com/USERNAME/si-akademik.git
+
+2. Inisialisasi dan commit pertama
+  git init
+  git status                  (file .gitignore sudah ada di folder ini; vendor/.env/log tidak ikut)
+  git add .
+  git commit -m "Commit pertama: project SI Akademik"
+  git log --oneline
+
+3. Hubungkan ke GitHub lalu push
+  git branch -M main
+  git remote add origin https://github.com/USERNAME/si-akademik.git
+  git push -u origin main
+  (GitHub meminta login lewat browser / token, itu normal)
+
+4. Tambah SATU perubahan (contoh: ubah teks footer)
+  Buka app\Views\partials\footer.php, ubah teks "&copy; 2026 SI Akademik" -> "&copy; 2026 Polije - SI Akademik"
+  git status
+  git add .
+  git commit -m "Mengubah teks footer"
+  git push
+
+5. Cek riwayat: git log --oneline  dan buka tab "Commits" di GitHub (minimal 2 commit).
+
+PULL dan CLONE (untuk dijelaskan)
+  git pull                                        mengambil perubahan terbaru dari GitHub ke laptop
+  git clone https://github.com/USERNAME/si-akademik.git   mengambil seluruh project dari GitHub (pertama kali)
+
+CONTOH OUTPUT ASLI (saya jalankan di sandbox dengan remote lokal)
+  $ git log --oneline
+  8d0c564 Mengubah teks footer
+  e3abcb9 Commit pertama: project SI Akademik
+  $ git push -u origin main
+   * [new branch]      main -> main
+  branch 'main' set up to track 'origin/main'.
+
+YANG DIKUMPULKAN: link repository GitHub, minimal 2 commit, ada file .gitignore.
+
+PENJELASAN SINGKAT UNTUK DOSEN
+  add     = memilih perubahan yang akan disimpan (staging)
+  commit  = menyimpan versi (checkpoint) dengan pesan
+  push    = mengirim commit dari laptop ke GitHub
+  pull    = mengambil perubahan dari GitHub ke laptop
+  clone   = menyalin seluruh repository dari GitHub (pertama kali)
+  .gitignore = daftar file yang tidak ikut di-track (vendor, .env, log, Thumbs.db)

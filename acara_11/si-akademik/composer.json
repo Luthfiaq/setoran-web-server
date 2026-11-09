@@ -1,0 +1,13 @@
+{
+    "name": "mahasiswa/si-akademik",
+    "description": "Sistem Informasi Akademik - PHP Native MVC (BKPM Workshop SI Web Server)",
+    "type": "project",
+    "require": {
+        "php": ">=8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}

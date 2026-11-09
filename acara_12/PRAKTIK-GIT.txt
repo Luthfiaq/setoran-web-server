@@ -1,0 +1,64 @@
+ACARA 12 - BRANCH, MERGE, PULL REQUEST, DAN CONFLICT
+=====================================================
+Lanjutkan di repository si-akademik dari acara 11 (jalankan di folder project, bukan di folder ini).
+File bahan fitur: acara_12\payload-fitur-login\login.php (halaman login dengan tombol "Lihat password").
+Project hasil akhir (setelah merge) ada di acara_12\si-akademik.
+
+A. BRANCH + FITUR + MERGE
+  git checkout main
+  git checkout -b fitur-login
+  -> salin payload-fitur-login\login.php menimpa app\Views\auth\login.php
+  git add .
+  git commit -m "Menambahkan fitur login: tombol lihat password"
+  git checkout main
+  git merge --no-ff fitur-login -m "Merge branch fitur-login"
+  (--no-ff memaksa dibuat merge commit supaya cabangnya kelihatan di history)
+  git push -u origin fitur-login      (kirim juga branch fitur ke GitHub, dipakai untuk Pull Request)
+  git push
+
+B. SIMULASI CONFLICT (ubah BARIS YANG SAMA di dua branch)
+  git checkout -b fitur-judul
+  Di app\Views\auth\login.php ubah:  <h3 class="mb-1">Login Sistem Akademik</h3>  ->  <h3 class="mb-1">Masuk SIAKAD</h3>
+  git commit -am "Ubah judul login di branch"
+  git checkout main
+  Di file yang sama ubah baris yang sama menjadi:  <h3 class="mb-1">Login Admin</h3>
+  git commit -am "Ubah judul login di main"
+  git merge fitur-judul               -> muncul CONFLICT
+
+  Contoh output asli:
+    Auto-merging app/Views/auth/login.php
+    CONFLICT (content): Merge conflict in app/Views/auth/login.php
+    Automatic merge failed; fix conflicts and then commit the result.
+  Isi file saat conflict:
+    <<<<<<< HEAD
+                    <h3 class="mb-1">Login Admin</h3>
+    =======
+                    <h3 class="mb-1">Masuk SIAKAD</h3>
+    >>>>>>> fitur-judul
+
+C. SELESAIKAN CONFLICT
+  1. Buka login.php di VS Code, hapus tanda <<<<<<<, =======, >>>>>>> lalu sisakan SATU judul yang benar (mis. "Masuk SIAKAD").
+  2. git add .
+  3. git commit -m "Menyelesaikan merge conflict"
+  4. git push origin main
+  Hasil git log --oneline --graph (contoh):
+    *   b878606 Menyelesaikan merge conflict
+    |\
+    | * 0b79a45 Ubah judul login di branch
+    * | 1cd7458 Ubah judul login di main
+    |/
+    * 50c08ac Menambahkan fitur login: tombol lihat password
+
+D. PULL REQUEST (dilakukan di website GitHub)
+  1. Buat perubahan kecil di branch baru:  git checkout -b fitur-pr  -> edit sesuatu -> commit -> git push -u origin fitur-pr
+  2. Di GitHub muncul tombol "Compare & pull request" -> pilih base: main, compare: fitur-pr -> Create pull request.
+  3. Periksa tab "Files changed" (code review), lalu klik "Merge pull request".
+  4. Di laptop: git checkout main  lalu  git pull
+
+YANG DIKUMPULKAN: link repo, minimal 1 branch fitur, 1 fitur baru, 1 merge, bukti conflict selesai (screenshot terminal), minimal 1 Pull Request.
+
+PENJELASAN SINGKAT UNTUK DOSEN
+  branch        = cabang untuk mengembangkan fitur tanpa mengganggu main
+  merge         = menggabungkan perubahan satu branch ke branch lain
+  conflict      = Git menemukan perubahan di baris yang sama dan minta kita memilih manual (project tidak rusak)
+  pull request  = usulan penggabungan di GitHub supaya bisa direview dulu sebelum masuk ke main

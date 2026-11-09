@@ -1,0 +1,13 @@
+/vendor/
+.env
+# Kredensial & konfigurasi server (JANGAN di-commit)
+/app/config/env.php
+/storage/logs/*
+!/storage/logs/.gitkeep
+/public/uploads/*
+!/public/uploads/.gitkeep
+/deploy/hasil/
+/database/backup/*.sql
+!/database/backup/db_workshop_backup_acara26.sql
+Thumbs.db
+.DS_Store

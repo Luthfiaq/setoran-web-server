@@ -1,0 +1,40 @@
+-- Acara 7: membuat database dan 3 tabel utama
+CREATE DATABASE IF NOT EXISTS si_akademik
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE si_akademik;
+
+-- Tabel prodi
+CREATE TABLE IF NOT EXISTS prodi (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    kode VARCHAR(10) NOT NULL UNIQUE,
+    nama VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabel mahasiswa (relasi ke prodi)
+CREATE TABLE IF NOT EXISTS mahasiswa (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nim VARCHAR(20) NOT NULL UNIQUE,
+    nama VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    prodi_id INT NOT NULL,
+    angkatan YEAR NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_mahasiswa_prodi FOREIGN KEY (prodi_id) REFERENCES prodi(id)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- Tabel matakuliah (relasi ke prodi)
+CREATE TABLE IF NOT EXISTS matakuliah (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    kode VARCHAR(10) NOT NULL UNIQUE,
+    nama VARCHAR(150) NOT NULL,
+    sks TINYINT NOT NULL,
+    prodi_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_matakuliah_prodi FOREIGN KEY (prodi_id) REFERENCES prodi(id)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+);
